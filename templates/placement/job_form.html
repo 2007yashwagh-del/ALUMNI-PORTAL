@@ -1,0 +1,462 @@
+{% extends "placement/base.html" %}
+
+{% block content %}
+<div class="container-lg mt-5 pt-4">
+    <div class="job-form-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2 class="text-primary">
+                {% if job %}
+                <i class="bi bi-pencil"></i> Edit Job/Internship
+                {% else %}
+                <i class="bi bi-plus-circle"></i> Post New Job/Internship
+                {% endif %}
+            </h2>
+        </div>
+
+        <!-- Flash Messages -->
+        {% if get_flashed_messages() %}
+        <div style="display: none;" data-flash-messages='[
+            {% for message in get_flashed_messages() %}
+            {"category": "error", "message": "{{ message }}"}{{ "," if not loop.last else "" }}
+            {% endfor %}
+        ]'></div>
+        {% endif %}
+
+
+
+        <!-- Main Form -->
+        <form method="POST" id="jobForm" novalidate class="job-form-wrapper">
+
+            <!-- REQUIRED INFORMATION SECTION -->
+            <div class="form-section">
+                <div class="form-section-header required-section">
+                    <i class="bi bi-asterisk"></i> Required Information
+                </div>
+
+                <div class="form-group-row full">
+                    <div class="form-group">
+                        <label for="title" class="form-label">
+                            Job/Internship Title
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="title" name="title"
+                            value="{{ job.title if job else '' }}"
+                            placeholder="e.g., Senior Software Engineer, Internship - Web Development" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Enter a clear and descriptive job title</small>
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="company" class="form-label">
+                            Company Name
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="company" name="company"
+                            value="{{ job.company if job else '' }}" placeholder="e.g., Acme Corp, Tech Solutions Inc."
+                            required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_type" class="form-label">
+                            Job Type
+                            <span class="required-mark">*</span>
+                        </label>
+                        <select class="form-select" id="job_type" name="job_type" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="Job" {% if job and job.job_type=='Job' %}selected{% endif %}>
+                                💼 Job Opening
+                            </option>
+                            <option value="Internship" {% if job and job.job_type=='Internship' %}selected{% endif %}>
+                                📚 Internship
+                            </option>
+                            <option value="Both" {% if job and job.job_type=='Both' %}selected{% endif %}>
+                                ⭐ Both (Job & Internship)
+                            </option>
+                        </select>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Select whether this is a job opening, internship, or both</small>
+                    </div>
+                </div>
+
+                <div class="form-group-row full">
+                    <div class="form-group">
+                        <label for="description" class="form-label">
+                            Job Description
+                            <span class="required-mark">*</span>
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="6"
+                            placeholder="Provide a detailed description of the position, responsibilities, and requirements..."
+                            required>{{ job.description if job else '' }}</textarea>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Include key responsibilities, required skills, and
+                            qualifications</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOCATION & COMPENSATION SECTION -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="bi bi-geo-alt"></i> Location & Compensation
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="location" class="form-label">
+                            Location
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="location" name="location"
+                            value="{{ job.location if job else '' }}" placeholder="e.g., New York, Remote, Bangalore" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Work location or remote option</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salary_range" class="form-label">
+                            Salary Range
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="salary_range" name="salary_range"
+                            value="{{ job.salary_range if job else '' }}"
+                            placeholder="e.g., $80,000 - $120,000 per annum" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Salary range in standardized format</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOB DETAILS SECTION -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="bi bi-info-circle"></i> Job Details
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="department" class="form-label">
+                            Department/Industry
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="department" name="department"
+                            value="{{ job.department if job else '' }}"
+                            placeholder="e.g., Software Development, Data Science" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eligibility" class="form-label">
+                            Eligibility Criteria
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="eligibility" name="eligibility"
+                            value="{{ job.eligibility if job else '' }}"
+                            placeholder="e.g., 2-5 years experience, B.Tech" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="application_deadline" class="form-label">
+                            Application Deadline
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="date" class="form-control" id="application_deadline" name="application_deadline"
+                            value="{% if job and job.application_deadline %}{{ job.application_deadline.strftime('%Y-%m-%d') }}{% endif %}" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Select a date today or in the future</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACT INFORMATION SECTION -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="bi bi-telephone"></i> Contact Information
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="company_website" class="form-label">
+                            Company Website URL
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="company_website" name="company_website"
+                            value="{{ job.company_website | default('', true) }}" placeholder="https://company.com" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Company website URL</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_email" class="form-label">
+                            Company Email
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="contact_email" name="contact_email"
+                            value="{{ job.contact_email | default('', true) }}" placeholder="hr@company.com" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Email for inquiries</small>
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="contact_phone" class="form-label">
+                            Contact Phone
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="tel" class="form-control" id="contact_phone" name="contact_phone"
+                            value="{{ job.contact_phone | default('', true) }}" placeholder="+1 (555) 123-4567" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Phone number for inquiries</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apply_link" class="form-label">
+                            Job Apply Link
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="apply_link" name="apply_link"
+                            value="{{ job.apply_link if job else '' }}" placeholder="https://company.com/apply" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">Direct link for applicants</small>
+                    </div>
+                </div>
+
+                <div class="form-group-row full">
+                    <div class="form-group">
+                        <label for="company_linkedin_url" class="form-label">
+                            Company LinkedIn URL
+                            <span class="required-mark">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="company_linkedin_url" name="company_linkedin_url"
+                            value="{{ job.company_linkedin_url | default('', true) }}" placeholder="https://www.linkedin.com/company/" required>
+                        <div class="invalid-feedback"></div>
+                        <small class="form-text">LinkedIn profile or company page</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOB POSTER SECTION -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="bi bi-file-image"></i> Job Poster (Optional)
+                </div>
+
+                <div class="form-group-row full">
+                    <div class="form-group">
+                        <label for="job_poster" class="form-label">
+                            Upload Job Poster/Flyer
+                        </label>
+                        <div class="banner-upload-area" id="posterUploadArea">
+                            <input type="file" class="form-control d-none" id="job_poster" name="job_poster" 
+                                accept="image/*">
+                            <div class="upload-placeholder" id="posterUploadPlaceholder" {% if job and job.job_poster %}style="display: none;"{% endif %}>
+                                <i class="bi bi-cloud-arrow-up" style="font-size: 2.5rem; color: #0d6efd; margin-bottom: 10px;"></i>
+                                <p style="font-size: 1.1rem; margin-bottom: 5px;">Click to upload or drag and drop</p>
+                                <small style="color: #666;">PNG, JPG, GIF up to 10MB</small>
+                            </div>
+                            <div id="posterImagePreview" style="display: {% if job and job.job_poster %}block{% else %}none{% endif %}; text-align: center;">
+                                <img id="posterPreviewImg" src="{% if job and job.job_poster %}{{ url_for('static', filename='uploads/jobs/' + job.job_poster) }}{% endif %}" alt="Preview" style="max-width: 100%; max-height: 400px; border-radius: 8px; margin-top: 10px;">
+                                <p class="mt-2" id="posterFileName">{% if job and job.job_poster %}{{ job.job_poster.split('_', 1)[1] if '_' in job.job_poster else job.job_poster }}{% endif %}</p>
+                                {% if job and job.job_poster %}
+                                <button type="button" class="btn btn-sm btn-danger mt-2" id="changePosterBtn">
+                                    <i class="bi bi-pencil"></i> Change Poster
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <small class="form-text" style="display: block; margin-top: 10px;">
+                            Upload a job posting flyer or banner image if available. This is optional.
+                        </small>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- FORM ACTIONS -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                    <i class="bi bi-check-circle"></i>
+                    {% if job %}
+                    Update Job/Internship
+                    {% else %}
+                    Post Job/Internship
+                    {% endif %}
+                </button>
+                <a href="{{ url_for('placement.jobs_list_cell') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Include Validation Script -->
+<script src="{{ url_for('static', filename='js/job_validation.js') }}"></script>
+
+<!-- Include Notification Functions -->
+<script src="{{ url_for('static', filename='js/toastr_notification.js') }}"></script>
+
+<script>
+    // Job Poster Upload Handler
+    document.addEventListener('DOMContentLoaded', function () {
+        const jobPosterInput = document.getElementById('job_poster');
+        const posterUploadArea = document.getElementById('posterUploadArea');
+        const posterUploadPlaceholder = document.getElementById('posterUploadPlaceholder');
+        const posterImagePreview = document.getElementById('posterImagePreview');
+        const posterPreviewImg = document.getElementById('posterPreviewImg');
+        const posterFileName = document.getElementById('posterFileName');
+        const changePosterBtn = document.getElementById('changePosterBtn');
+        const jobForm = document.getElementById('jobForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Poster upload area click handler
+        posterUploadArea.addEventListener('click', function(e) {
+            // Only trigger file input if clicked directly on the upload area, not on child elements
+            if (e.target === posterUploadArea || e.target === posterUploadPlaceholder) {
+                jobPosterInput.click();
+            }
+        });
+
+        // Change poster button handler
+        if (changePosterBtn) {
+            changePosterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                jobPosterInput.click();
+            });
+        }
+
+        jobPosterInput.addEventListener('change', function(e) {
+            handlePosterSelection(e.target.files[0]);
+        });
+
+        // Drag and drop
+        posterUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            posterUploadArea.style.backgroundColor = '#f0f7ff';
+            posterUploadArea.style.borderColor = '#0d6efd';
+        });
+
+        posterUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            posterUploadArea.style.backgroundColor = 'transparent';
+            posterUploadArea.style.borderColor = '#ddd';
+        });
+
+        posterUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            posterUploadArea.style.backgroundColor = 'transparent';
+            posterUploadArea.style.borderColor = '#ddd';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                jobPosterInput.files = files;
+                handlePosterSelection(files[0]);
+            }
+        });
+
+        function handlePosterSelection(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    posterImagePreview.innerHTML = '';
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.alt = 'Preview';
+                    imgElement.style.cssText = 'max-width: 100%; max-height: 400px; border-radius: 8px; margin-top: 10px; pointer-events: none;';
+                    
+                    const fileNameElement = document.createElement('p');
+                    fileNameElement.textContent = file.name;
+                    fileNameElement.className = 'mt-2';
+                    fileNameElement.style.pointerEvents = 'none';
+                    
+                    const changeBtnElement = document.createElement('button');
+                    changeBtnElement.type = 'button';
+                    changeBtnElement.className = 'btn btn-sm btn-danger mt-2';
+                    changeBtnElement.id = 'changePosterBtn';
+                    changeBtnElement.innerHTML = '<i class="bi bi-pencil"></i> Change Poster';
+                    changeBtnElement.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        jobPosterInput.click();
+                    });
+                    
+                    posterImagePreview.appendChild(imgElement);
+                    posterImagePreview.appendChild(fileNameElement);
+                    posterImagePreview.appendChild(changeBtnElement);
+                    
+                    posterUploadPlaceholder.style.display = 'none';
+                    posterImagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                if (file) {
+                    alert('Please select a valid image file');
+                }
+            }
+        }
+
+        // Form submission
+        if (jobForm) {
+            jobForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                if (submitBtn.disabled) {
+                    return;
+                }
+
+                const formData = new FormData(jobForm);
+                
+                // Ensure job_poster file is included if selected
+                if (jobPosterInput.files && jobPosterInput.files.length > 0) {
+                    formData.set('job_poster', jobPosterInput.files[0]);
+                }
+                
+                const jobId = '{{ job.id if job else "" }}';
+                let submitUrl = '{{ url_for("placement.create_job_cell") }}';
+                let successMessage = 'Job/Internship posted successfully!';
+
+                if (jobId) {
+                    submitUrl = '{{ url_for("placement.edit_job_cell", job_id=0) }}'.replace('0', jobId);
+                    successMessage = 'Job/Internship updated successfully!';
+                }
+
+                fetch(submitUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showSuccessNotification(data.message || successMessage, 'Success');
+                            setTimeout(() => {
+                                if (data.redirect_url) {
+                                    window.location.href = data.redirect_url;
+                                } else {
+                                    window.location.href = '{{ url_for("placement.jobs_list_cell") }}';
+                                }
+                            }, 1500);
+                        } else {
+                            showErrorNotification(data.message || 'An error occurred.', 'Error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showErrorNotification('An unexpected error occurred. Please try again.', 'Error');
+                    });
+            });
+        }
+    });
+</script>
+
+{% endblock %}
