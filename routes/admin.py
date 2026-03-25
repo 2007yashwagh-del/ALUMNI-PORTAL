@@ -216,8 +216,10 @@ def reject_user(user_id):
 @admin.route("/users")
 @admin_required
 def users():
+
     users = User.query.filter(
-        User.role != UserRole.INSTITUTE
+        User.role != UserRole.INSTITUTE,
+        User.name != UserRole.PLACEMENT.value  # Exclude placement cell user
     ).order_by(User.created_at.desc()).all()
 
     return render_template("admin/users.html", users=users)
