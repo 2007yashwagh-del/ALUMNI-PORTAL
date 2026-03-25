@@ -219,7 +219,7 @@ def users():
 
     users = User.query.filter(
         User.role != UserRole.INSTITUTE,
-        User.role != UserRole.PLACEMENT.value  # Exclude placement cell user
+        User.role != UserRole.PLACEMENT
     ).order_by(User.created_at.desc()).all()
 
     return render_template("admin/users.html", users=users)
