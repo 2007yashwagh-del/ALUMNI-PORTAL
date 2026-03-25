@@ -623,3 +623,13 @@ def guidance():
         students_list=students_list,
         department=dept_display
     )
+
+# =========================
+# EVENTS
+# =========================
+@faculty.route("/events")
+@faculty_required
+def events():
+    from models.event import Event
+    events = Event.query.order_by(Event.event_date.desc()).all()
+    return render_template("faculty/events.html", events=events)

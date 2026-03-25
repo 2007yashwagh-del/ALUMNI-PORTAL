@@ -1,6 +1,73 @@
 {% extends "alumni/base.html" %}
 
 {% block content %}
-<h2>Events</h2>
-<p>Register and participate in events.</p>
+<div class="page-header mb-4">
+	<h2><i class="bi bi-calendar-event"></i> Events</h2>
+	<p class="text-muted">Browse all events managed by admin.</p>
+</div>
+
+<div class="container-fluid px-4">
+	{% if events %}
+		<div class="row g-4">
+			{% for event in events %}
+			<div class="col-lg-4 col-md-6">
+				<div class="event-card card border-0 h-100 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+					<div class="event-image-wrapper position-relative" style="height: 220px; overflow: hidden; background: linear-gradient(135deg, #f8fafc, #ecf0f1);">
+						{% if event.banner_image %}
+							<img src="{{ url_for('static', filename='uploads/events/' + event.banner_image) }}" 
+								 class="card-img-top w-100 h-100" alt="{{ event.title }}" 
+								 style="object-fit: cover; object-position: center;">
+						{% else %}
+							<div class="d-flex align-items-center justify-content-center w-100 h-100">
+								<div class="text-center">
+									<i class="bi bi-image" style="font-size: 4rem; color: #c41e3a; opacity: 0.2;"></i>
+									<p class="text-muted mt-2">No image</p>
+								</div>
+							</div>
+						{% endif %}
+						{% if event.event_date %}
+						<div class="position-absolute top-0 start-0 m-3">
+							<span class="badge badge-event" style="background: linear-gradient(135deg, #c41e3a, #8b0000); padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px;">
+								<i class="bi bi-calendar3"></i> {{ event.event_date.strftime('%d %b %Y') }}
+							</span>
+						</div>
+						{% endif %}
+					</div>
+					<div class="card-body d-flex flex-column" style="padding: 1.8rem;">
+						<h5 class="card-title fw-700 mb-2" style="font-size: 1.2rem; color: #1a202c; line-height: 1.4;">
+							{{ event.title }}
+						</h5>
+						{% if event.department %}
+						<div class="mb-3 d-flex flex-wrap gap-2">
+							{% for dept in event.department.split(',') %}
+							<span class="badge" style="background: #f0f5ff; color: #0d6efd; padding: 0.5rem 0.75rem; font-size: 0.75rem; border-radius: 6px; font-weight: 500; display: inline-block;">
+								<i class="bi bi-building"></i> {{ dept.strip() }}
+							</span>
+							{% endfor %}
+						</div>
+						{% endif %}
+						<p class="card-text text-muted" style="font-size: 0.95rem; line-height: 1.6; flex-grow: 1; margin-bottom: 1.5rem;">
+							{% if event.description %}
+								{{ event.description[:120] }}{% if event.description|length > 120 %}...{% endif %}
+							{% else %}
+								<span class="text-secondary-emphasis fst-italic">No description available</span>
+							{% endif %}
+						</p>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="container py-5 text-center">
+			<div style="max-width: 500px; margin: 0 auto;">
+				<div class="mb-4">
+					<i class="bi bi-calendar-x" style="font-size: 5rem; color: #cbd5e0; opacity: 0.6;"></i>
+				</div>
+				<h4 class="fw-700 mb-2" style="color: #2d3748;">No Events Found</h4>
+				<p class="text-muted mb-4">There are no events scheduled right now. Check back soon!</p>
+			</div>
+		</div>
+	{% endif %}
+</div>
 {% endblock %}

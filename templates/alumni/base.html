@@ -121,13 +121,15 @@
                     </a>
                 </li>
 
-                <!-- <li>
-                    <a href="{{ url_for('alumni.events') }}">
+
+                <li>
+                    <a href="{{ url_for('alumni.events') }}"
+                       class="{% if request.endpoint == 'alumni.events' %}active{% endif %}">
                         <i class="bi bi-calendar-event"></i> Events
                     </a>
                 </li>
 
-                <li>
+                <!-- <li>
                     <a href="{{ url_for('alumni.experience') }}">
                         <i class="bi bi-journal-text"></i> Share Experience
                     </a>

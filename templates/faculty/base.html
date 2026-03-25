@@ -137,6 +137,15 @@
                     </a>
                 </li>
 
+
+                <li>
+                    <a href="{{ url_for('faculty.events') }}"
+                       class="{% if request.endpoint == 'faculty.events' %}active{% endif %} menu-item-with-badge">
+                        <span class="menu-item-content">
+                            <i class="bi bi-calendar-event"></i> Events
+                        </span>
+                    </a>
+                </li>
                 <li>
                     <a href="{{ url_for('faculty.seminars') }}"
                        class="{% if request.endpoint == 'faculty.seminars' %}active{% endif %} menu-item-with-badge">

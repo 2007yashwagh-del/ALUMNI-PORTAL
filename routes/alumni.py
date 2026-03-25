@@ -963,7 +963,9 @@ def alumni_list():
 @alumni.route("/events")
 @alumni_required
 def events():
-    return render_template("alumni/events.html")
+    from models.event import Event
+    events = Event.query.order_by(Event.event_date.desc()).all()
+    return render_template("alumni/events.html", events=events)
 
 
 # =========================
